@@ -43,7 +43,7 @@ public class RoleController {
 	}
 }
 ```
-@Autowired allow to place an intance of the bean service RoleService into this field. 
+@Autowired allows to place an instance of the bean service RoleService into this field. 
 The application context directly inject an instance of RoleService
 
 DAO folder contains both interfaces and implementations of the Data Access Object. Hibernates is used to do all the CRUD
@@ -55,9 +55,9 @@ Nothing special except get the SessionFactory bean autowired and always use the 
 private SessionFactory sessionFactory;
 ```
 
-Domain folder contains all objects useful for the application with simple classes annoted appropriately for hibernate and with 
+Domain folder contains all objects useful for the application with simple classes annotated appropriately for hibernate and with 
 always an empty constructor and getters/setters.
-Exemple:
+Example:
 ```java
 @Entity
 public class Annonce {
@@ -91,3 +91,34 @@ public class Annonce {
 	}
 	//...
 ```
+
+Following the same pattern, there are an interface and the implementation of this one for services
+The implemented class has to be annotated by @Service and use again the @Autowired principle to get the DOA needed.
+All method using DOA has to be @Transactional. This allows to define the scope of a single database transaction. This way, it will make sure that the changes are well persisted in database. And if something goes wrong, it will just roll back before the beginning of the transaction.
+```java
+@Service
+public class AnnonceServiceImpl implements AnnonceService {
+
+	@Autowired
+	AnnonceDao annonceDao;
+
+	@Autowired
+	CategorieDao categorieDao;
+
+	@Override
+	@Transactional
+	public int insertRow(Annonce ann) {
+		annonceDao.incrementNbAnnCrees();
+		return annonceDao.insertRow(ann);
+	}
+}
+```
+
+Services and DOAs implementation have to be declared in the spring configuration file as bean
+
+```xml
+ <bean id="categorieDaoImpl" class="glp.dao.CategorieDaoImpl" />  
+ <bean id="categorieServiceImpl" class="glp.services.CategorieServiceImpl" /> 
+```
+
+The util folder just contains classes such as Validator, formatter or miscellaneous operations needed and which doesn't fit elsewhere.
