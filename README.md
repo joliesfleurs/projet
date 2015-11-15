@@ -7,7 +7,7 @@ It provides tools such as advertisement for car sharing, lending tools, help in 
 
 ## Table of contents
 
-* [Technolgies used](#technologies-used)
+* [Technologies used](#technologies-used)
 * [Samples of code](#samples-of-code)
 	* [Spring MVC architecture](#spring-mvc-architecture)
 	* [ Testing with Mockito and spring test framework](#testing-with-mockito-and-spring-test-framework)
