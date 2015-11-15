@@ -4,18 +4,32 @@ Lille 1 Community is university project created in order to help students and em
 to help each other and communicate easily.
 It provides tools such as advertisement for car sharing, lending tools, help in math and feedback about experiences abroad.
 
+
+## Table of contents
+
+* [Technolgies used](#technologies-used)
+* [Samples of code](#samples-of-code)
+	* [Spring MVC architecture](#spring-mvc-architecture)
+	* [ Testing with Mockito and spring test framework](#testing-with-mockito-and-spring-test-framework)
+
+
 ## Technologies used
 
-This web application is designed with JEE using framework like Spring MVC, Hibernate for the backend and HTML5, CSS, JQuery 
-and Foundation library for the frontend.
-There is also an example of testing Controller with Mockito.
-L1C implements spring MVC system but also the i18n tool. Therefore, this architecture can be used easily for other projects
+* Spring MVC
+* Hibernate
+* HTML/CSS
+* JQuery
+* Foundation library
+* Maven
+* Mockito
 
-## In which case this code can be useful to me ?
+
+## Samples of code
 In this part, I will describe (for you, visitor, and for the future me) which part of this project can illustrate classical
-cases of development
+cases of development.
+I will put sample of code that could be used and adated for other projects.
 
-* Spring MVC architecture
+### Spring MVC architecture
 
 ```
 main/
@@ -122,3 +136,84 @@ Services and DOAs implementation have to be declared in the spring configuration
 ```
 
 The util folder just contains classes such as Validator, formatter or miscellaneous operations needed and which doesn't fit elsewhere.
+
+### Testing with [Mockito](http://mockito.org/) and spring test framework
+
+The combination of these frameworks provides a lot of possibility to test an application.
+
+Maven dependencies
+
+```xml
+<!-- Test -->
+<dependency>
+	<groupId>junit</groupId>
+	<artifactId>junit</artifactId>
+	<version>4.8.1</version>
+	<type>jar</type>
+	<scope>compile</scope>
+</dependency>
+<dependency>
+	<groupId>org.mockito</groupId>
+	<artifactId>mockito-all</artifactId>
+	<version>1.8.5</version>
+</dependency>
+<dependency>
+	<groupId>org.springframework</groupId>
+	<artifactId>spring-test</artifactId>
+	<version>4.1.3.RELEASE</version>
+</dependency>
+<dependency>
+	<groupId>com.jayway.jsonpath</groupId>
+	<artifactId>json-path</artifactId>
+	<version>0.8.1</version>
+	<scope>test</scope>
+</dependency>
+```
+Mockito is a testing framwork especially design for unit testing in Java. It is really easy to use and allow powerful test.
+It this project, it is used to test Controller which it is not easy to test with simple JUnit.
+
+```java
+public class AnnonceControllerTest extends TestCase{
+
+	/* We initiate controller and services needed, they will be mocks of the real ones in order to not make any changes on 	the databases	*/
+	@InjectMocks
+	private AnnonceController controller = new AnnonceController();
+	
+	@Mock
+	private AnnonceService mockAnnonceService;
+	
+	@Mock
+	private CategorieService mockCategorieService;
+	
+	@Mock
+	private UtilisateurService mockUtilisateurService;
+	
+	@Mock
+	View mockView;
+	
+	MockMvc mockMvc;
+	
+	/*Before actually doing the tests, we set up the mock environment*/
+	/*standaloneSetup methid does not load all the spring configuration but create mock out all the dependencies */
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
+		mockMvc = MockMvcBuilders.standaloneSetup(controller).setSingleView(mockView).build();
+	}
+
+	@Test
+	public void testGetCreateAnnForm() throws Exception {
+		 List<Categorie> expectedCategorie = Arrays.asList(new Categorie());
+		 when(mockCategorieService.getList()).thenReturn(expectedCategorie);
+		 
+		 Utilisateur user = new Utilisateur();
+		 when(mockUtilisateurService.getUserInSession()).thenReturn(user);
+		 
+		 // Test results with this url, status is ok when there is no error then we compare the result
+		this.mockMvc.perform(get("/annonce/new"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("catList", expectedCategorie))
+			.andExpect(model().attribute("utilisateur", user));
+	}
+}
+```
