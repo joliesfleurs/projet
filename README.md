@@ -27,7 +27,7 @@ It provides tools such as advertisement for car sharing, lending tools, help in 
 ## Samples of code
 In this part, I will describe (for you, visitor, and for the future me) which part of this project can illustrate classical
 cases of development.
-I will put sample of code that could be used and adated for other projects.
+I will put sample of code that could be used and adapted for other projects.
 
 ### Spring MVC architecture
 
